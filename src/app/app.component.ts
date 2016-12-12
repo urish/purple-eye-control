@@ -22,12 +22,13 @@ export class AppComponent implements OnInit {
     this.purpleEye.batteryLevel.subscribe(level => {
       this.batteryLevel = level;
     });
+    this.purpleEye.connectionState.subscribe(connected => {
+      this.connected = connected;
+    });
   }
 
   connect() {
-    this.purpleEye.connect().then(() => {
-      this.connected = true;
-    });
+    this.purpleEye.connect();
   }
 
   get batteryLevelClass() {

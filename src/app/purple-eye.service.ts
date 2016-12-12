@@ -27,15 +27,23 @@ export class PurpleEyeService {
 
     imu = new BehaviorSubject<ImuMeasurement>(null);
     batteryLevel = new BehaviorSubject<number>(null);
+    connectionState = new BehaviorSubject<boolean>(false);
 
     constructor() {
     }
 
     async connect() {
-        this.device = await navigator.bluetooth.requestDevice({
-            filters: [{ services: [SERVO_SERVICE] }],
-            optionalServices: [BATTERY_SERVICE, IMU_SERVICE]
+        if (!this.device) {
+            this.device = await navigator.bluetooth.requestDevice({
+                filters: [{ services: [SERVO_SERVICE] }],
+                optionalServices: [BATTERY_SERVICE, IMU_SERVICE]
+            });
+        }
+
+        this.device.addEventListener('gattserverdisconnected', listener => {
+            this.connectionState.next(false);
         });
+
         console.log('Found: ' + this.device.name);
         console.log('Connecting to GATT Server...');
         this.gattServer = await this.device.gatt.connect();
@@ -58,6 +66,8 @@ export class PurpleEyeService {
             this.imu.next(parseImuMeasurement(imuCharacteristic.value));
         });
         await imuCharacteristic.startNotifications();
+
+        this.connectionState.next(true);
     }
 
     writeServos(rightLegValue: number, rightFootValue: number, leftFootValue: number, leftLegValue: number) {
