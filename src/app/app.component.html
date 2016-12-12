@@ -1,6 +1,6 @@
 <span class="battery-level" *ngIf="connected">
   <span [class]="batteryLevelClass"></span>
-  <span>{{batteryLevel}}</span>
+<span>{{batteryLevel}}</span>
 </span>
 
 <h1>
@@ -21,4 +21,11 @@
   <button md-raised-button (click)="stopMoving()">Stop</button>
 
   <pe-imu-view [imu]="imu"></pe-imu-view>
+
+  <div class="slider-container">
+    <md-slider min="60" max="120" step="1" [(ngModel)]="servoPositions.rightFoot" (change)="updateServos()" [disabled]="resting"></md-slider>
+    <md-slider min="60" max="120" step="1" [(ngModel)]="servoPositions.rightLeg" (change)="updateServos()" [disabled]="resting"></md-slider>
+    <md-slider min="60" max="120" step="1" [(ngModel)]="servoPositions.leftLeg" (change)="updateServos()" [disabled]="resting"></md-slider>
+    <md-slider min="60" max="120" step="1" [(ngModel)]="servoPositions.leftFoot" (change)="updateServos()" [disabled]="resting"></md-slider>
+  </div>
 </div>

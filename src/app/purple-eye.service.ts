@@ -13,6 +13,13 @@ export interface XYZVector {
     z: number;
 }
 
+export class ServoPositions {
+    rightLeg: number = 90;
+    rightFoot: number = 90;
+    leftFoot: number = 90;
+    leftLeg: number = 90;
+}
+
 export class ImuMeasurement {
     acceleration: XYZVector;
     compass: XYZVector;
@@ -28,6 +35,7 @@ export class PurpleEyeService {
     imu = new BehaviorSubject<ImuMeasurement>(null);
     batteryLevel = new BehaviorSubject<number>(null);
     connectionState = new BehaviorSubject<boolean>(false);
+    servoPositions = new BehaviorSubject<ServoPositions>(new ServoPositions());
 
     constructor() {
     }
@@ -72,7 +80,13 @@ export class PurpleEyeService {
 
     writeServos(rightLegValue: number, rightFootValue: number, leftFootValue: number, leftLegValue: number) {
         const view = new Uint8Array([rightLegValue, rightFootValue, leftFootValue, leftLegValue]);
-        return this.servoCharacteristic.writeValue(view);
+        return this.servoCharacteristic.writeValue(view)
+            .then(() => this.servoPositions.next({
+                rightLeg: rightLegValue,
+                rightFoot: rightFootValue,
+                leftLeg: leftLegValue,
+                leftFoot: leftFootValue
+            }));
     }
 }
 

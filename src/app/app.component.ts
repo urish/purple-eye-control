@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { PurpleEyeService, ImuMeasurement } from './purple-eye.service';
+import { PurpleEyeService, ImuMeasurement, ServoPositions } from './purple-eye.service';
 import { PurpleEyeMovesService } from './purple-eye-moves.service';
 
 @Component({
@@ -13,6 +13,7 @@ export class AppComponent implements OnInit {
   connected = false;
   batteryLevel = 0;
   imu: Observable<ImuMeasurement>;
+  servoPositions: ServoPositions;
 
   constructor(private purpleEye: PurpleEyeService, private purpleEyeMoves: PurpleEyeMovesService) {
     this.imu = purpleEye.imu;
@@ -24,6 +25,9 @@ export class AppComponent implements OnInit {
     });
     this.purpleEye.connectionState.subscribe(connected => {
       this.connected = connected;
+    });
+    this.purpleEye.servoPositions.subscribe(newPositions => {
+      this.servoPositions = newPositions;
     });
   }
 
@@ -67,5 +71,14 @@ export class AppComponent implements OnInit {
 
   stopMoving() {
     this.purpleEyeMoves.stopMoving();
+  }
+
+  updateServos() {
+    this.purpleEye.writeServos(this.servoPositions.rightLeg, this.servoPositions.rightFoot, this.servoPositions.leftFoot,
+     this.servoPositions.leftLeg);
+  }
+
+  get resting() {
+    return this.servoPositions.rightLeg === 0;
   }
 }
