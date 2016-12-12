@@ -68,7 +68,7 @@ export class PurpleEyeMovesService {
                         setTimeout(danceStep, 10);
                     }
                 });
-        }
+        };
 
         danceStep();
     }
