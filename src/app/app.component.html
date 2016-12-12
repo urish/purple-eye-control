@@ -1,3 +1,24 @@
+<span class="battery-level" *ngIf="connected">
+  <span [class]="batteryLevelClass"></span>
+  <span>{{batteryLevel}}</span>
+</span>
+
 <h1>
-  {{title}}
+  Purple Eye
 </h1>
+
+<button md-raised-button (click)="connect()" *ngIf="!connected">Connect</button>
+
+<div *ngIf="connected">
+  <h3>Control</h3>
+  <button md-raised-button (click)="spread()">Spread</button>
+  <button md-raised-button (click)="stand()">Stand</button>
+  <button md-raised-button (click)="rest()">Rest</button>
+
+  <h3>Move!</h3>
+  <button md-raised-button (click)="dance()">Dance</button>
+  <button md-raised-button (click)="shimmy()">Shimmy</button>
+  <button md-raised-button (click)="stopMoving()">Stop</button>
+
+  <pe-imu-view [imu]="imu"></pe-imu-view>
+</div>
