@@ -6,6 +6,7 @@ import { PurpleEyeService } from './purple-eye.service';
 export class PurpleEyeMovesService {
     dancing = false;
     shimming = false;
+    contorting = false;
 
     constructor(private purpleEye: PurpleEyeService) {
     }
@@ -52,6 +53,30 @@ export class PurpleEyeMovesService {
         step();
     }
 
+    async contort() {
+        this.stopMoving();
+        this.contorting = true;
+        let currentIndex = 0;
+        const contortSteps = [
+            { rightLegValue: 60, rightFootValue: 60, leftFootValue: 60, leftLegValue: 60 },
+            { rightLegValue: 80, rightFootValue: 80, leftFootValue: 80, leftLegValue: 80 },
+            { rightLegValue: 100, rightFootValue: 100, leftFootValue: 100, leftLegValue: 100 },
+            { rightLegValue: 120, rightFootValue: 120, leftFootValue: 120, leftLegValue: 120 },
+        ];
+
+        while (this.contorting) {
+            await this.purpleEye.writeServos(
+                contortSteps[currentIndex].rightLegValue,
+                contortSteps[currentIndex].rightFootValue,
+                contortSteps[currentIndex].leftFootValue,
+                contortSteps[currentIndex].leftLegValue
+            );
+
+            currentIndex = (currentIndex + 1) % contortSteps.length;
+            await new Promise(res => setTimeout(res, 150));
+        }
+    }
+
     dance() {
         let delta = 0, direction = 1;
         this.stopMoving();
@@ -76,5 +101,6 @@ export class PurpleEyeMovesService {
     stopMoving() {
         this.dancing = false;
         this.shimming = false;
+        this.contorting = false;
     }
 }
