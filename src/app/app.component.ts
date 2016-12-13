@@ -69,6 +69,10 @@ export class AppComponent implements OnInit {
     this.purpleEyeMoves.shimmy();
   }
 
+  contort() {
+    this.purpleEyeMoves.contort();
+  }
+
   stopMoving() {
     this.purpleEyeMoves.stopMoving();
   }
