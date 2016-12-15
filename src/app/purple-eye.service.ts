@@ -29,7 +29,6 @@ export class ImuMeasurement {
 @Injectable()
 export class PurpleEyeService {
     private device: BluetoothDevice;
-    private gattServer: BluetoothRemoteGATTServer;
     private servoCharacteristic: BluetoothRemoteGATTCharacteristic;
 
     imu = new BehaviorSubject<ImuMeasurement>(null);
@@ -54,12 +53,12 @@ export class PurpleEyeService {
 
         console.log('Found: ' + this.device.name);
         console.log('Connecting to GATT Server...');
-        this.gattServer = await this.device.gatt.connect();
+        await this.device.gatt.connect();
 
-        const servoService = await this.gattServer.getPrimaryService(SERVO_SERVICE);
+        const servoService = await this.device.gatt.getPrimaryService(SERVO_SERVICE);
         this.servoCharacteristic = await servoService.getCharacteristic(SERVO_CHARACTERISTIC);
 
-        const batteryService = await this.gattServer.getPrimaryService(BATTERY_SERVICE);
+        const batteryService = await this.device.gatt.getPrimaryService(BATTERY_SERVICE);
         const batteryCharacteristic = await batteryService.getCharacteristic('battery_level');
         const batteryValueInitial = await batteryCharacteristic.readValue();
         this.batteryLevel.next(batteryValueInitial.getUint8(0));
@@ -68,7 +67,7 @@ export class PurpleEyeService {
         });
         await batteryCharacteristic.startNotifications();
 
-        const imuService = await this.gattServer.getPrimaryService(IMU_SERVICE);
+        const imuService = await this.device.gatt.getPrimaryService(IMU_SERVICE);
         const imuCharacteristic = await imuService.getCharacteristic(IMU_CHARACTERISTIC);
         imuCharacteristic.addEventListener('characteristicvaluechanged', e => {
             this.imu.next(parseImuMeasurement(imuCharacteristic.value));
