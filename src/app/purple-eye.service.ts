@@ -6,6 +6,8 @@ const IMU_SERVICE = 0xff08;
 const IMU_CHARACTERISTIC = 0xff09;
 const SERVO_SERVICE = 0x5100;
 const SERVO_CHARACTERISTIC = 0x5200;
+const SOUND_SERVICE = 0xff10;
+const SOUND_CHARACTERISTIC = 0xff1a;
 
 export interface XYZVector {
     x: number;
@@ -30,6 +32,7 @@ export class ImuMeasurement {
 export class PurpleEyeService {
     private device: BluetoothDevice;
     private servoCharacteristic: BluetoothRemoteGATTCharacteristic;
+    private soundCharacteristic: BluetoothRemoteGATTCharacteristic;
 
     imu = new BehaviorSubject<ImuMeasurement>(null);
     batteryLevel = new BehaviorSubject<number>(null);
@@ -43,7 +46,7 @@ export class PurpleEyeService {
         if (!this.device) {
             this.device = await navigator.bluetooth.requestDevice({
                 filters: [{ services: [SERVO_SERVICE] }],
-                optionalServices: [BATTERY_SERVICE, IMU_SERVICE]
+                optionalServices: [BATTERY_SERVICE, IMU_SERVICE, SOUND_SERVICE]
             });
         }
 
@@ -74,6 +77,9 @@ export class PurpleEyeService {
         });
         await imuCharacteristic.startNotifications();
 
+        const soundService = await this.device.gatt.getPrimaryService(SOUND_SERVICE);
+        this.soundCharacteristic = await soundService.getCharacteristic(SOUND_CHARACTERISTIC);
+
         this.connectionState.next(true);
     }
 
@@ -86,6 +92,12 @@ export class PurpleEyeService {
                 leftLeg: leftLegValue,
                 leftFoot: leftFootValue
             }));
+    }
+
+    playSound(index: number, volume = 0) {
+        // tslint:disable-next-line:no-bitwise
+        const view = new Uint8Array([index & 0xff, (index >> 8) & 0xff, volume]);
+        return this.soundCharacteristic.writeValue(view);
     }
 }
 

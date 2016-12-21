@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   batteryLevel = 0;
   imu: Observable<ImuMeasurement>;
   servoPositions: ServoPositions;
+  errorMessage: string;
 
   constructor(private purpleEye: PurpleEyeService, private purpleEyeMoves: PurpleEyeMovesService) {
     this.imu = purpleEye.imu;
@@ -32,7 +33,10 @@ export class AppComponent implements OnInit {
   }
 
   connect() {
-    this.purpleEye.connect();
+    this.errorMessage = null;
+    this.purpleEye.connect().catch(err => {
+      this.errorMessage = err.toString();
+    });
   }
 
   get batteryLevelClass() {
@@ -80,6 +84,10 @@ export class AppComponent implements OnInit {
   updateServos() {
     this.purpleEye.writeServos(this.servoPositions.rightLeg, this.servoPositions.rightFoot, this.servoPositions.leftFoot,
      this.servoPositions.leftLeg);
+  }
+
+  playSound(index: number) {
+    this.purpleEye.playSound(index);
   }
 
   get resting() {

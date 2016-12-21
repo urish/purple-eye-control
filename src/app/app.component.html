@@ -9,6 +9,11 @@
 
 <button md-raised-button (click)="connect()" *ngIf="!connected">Connect</button>
 
+<div *ngIf="errorMessage">
+  <h3>Connection failed!</h3>
+  {{errorMessage}}
+</div>
+
 <div *ngIf="connected">
   <h3>Control</h3>
   <button md-raised-button (click)="spread()">Spread</button>
@@ -29,4 +34,9 @@
     <md-slider min="60" max="120" step="1" [(ngModel)]="servoPositions.leftLeg" (change)="updateServos()" [disabled]="resting"></md-slider>
     <md-slider min="60" max="120" step="1" [(ngModel)]="servoPositions.leftFoot" (change)="updateServos()" [disabled]="resting"></md-slider>
   </div>
+
+  <h3>Amuse</h3>
+  <button md-button (click)="playSound(1)"><md-icon>play_arrow</md-icon> 1</button>
+  <button md-button (click)="playSound(2)"><md-icon>play_arrow</md-icon> 2</button>
+  <button md-button (click)="playSound(3)"><md-icon>play_arrow</md-icon> 3</button>
 </div>
